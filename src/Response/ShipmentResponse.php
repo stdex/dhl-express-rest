@@ -17,11 +17,11 @@ class ShipmentResponse
         $static->trackingUrl = $data['trackingUrl'];
         $static->documents = $data['documents'];
         $static->label = array_values(array_filter($data['documents'], function ($row) {
-                return $row['typeCode'] == 'label';
-            }))[0] ?? [];
+            return $row['typeCode'] == 'label';
+        }))[0] ?? [];
         $static->invoice = array_values(array_filter($data['documents'], function ($row) {
-                return $row['typeCode'] == 'invoice';
-            }))[0] ?? [];
+            return $row['typeCode'] == 'invoice';
+        }))[0] ?? [];
 
         return $static;
     }
@@ -33,7 +33,7 @@ class ShipmentResponse
 
     public function labelData()
     {
-        if(! isset($this->label['content'])){
+        if (!isset($this->label['content'])) {
             return null;
         }
 
@@ -47,7 +47,7 @@ class ShipmentResponse
 
     public function invoiceData()
     {
-        if(! isset($this->invoice['content'])){
+        if (!isset($this->invoice['content'])) {
             return null;
         }
 

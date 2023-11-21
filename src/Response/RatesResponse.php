@@ -38,25 +38,25 @@ class RatesResponse
     protected function billingPrice(array $array): array
     {
         return array_values(
-                array_filter($array['totalPrice'], function ($tp) {
-                    return $tp['currencyType'] == 'BILLC'; // BILLING  CURRENCY
-                })
-            )[0] ?? [];
+            array_filter($array['totalPrice'], function ($tp) {
+                return $tp['currencyType'] == 'BILLC'; // BILLING  CURRENCY
+            })
+        )[0] ?? [];
     }
 
     protected function billingPriceTax(array $array): array
     {
         $breakdown = array_values(
-                array_filter($array['totalPriceBreakdown'] ?? [], function ($tp) {
-                    return $tp['currencyType'] == 'BILLC'; // BILLING  CURRENCY
-                })
-            )[0] ?? [];
+            array_filter($array['totalPriceBreakdown'] ?? [], function ($tp) {
+                return $tp['currencyType'] == 'BILLC'; // BILLING  CURRENCY
+            })
+        )[0] ?? [];
 
         $tax = array_values(
-                array_filter($breakdown['priceBreakdown'] ?? [], function ($tp) {
-                    return $tp['typeCode'] == 'STTXA'; // TAX
-                })
-            )[0] ?? [];
+            array_filter($breakdown['priceBreakdown'] ?? [], function ($tp) {
+                return $tp['typeCode'] == 'STTXA'; // TAX
+            })
+        )[0] ?? [];
 
         return [
             'priceCurrency' => $breakdown['priceCurrency'] ?? null,

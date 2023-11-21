@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Booni3\DhlExpressRest\DTO;
-
 
 class LineItem
 {
@@ -10,16 +8,17 @@ class LineItem
 
     public function __construct(
         string $description,
-        float $price,
-        int $qty,
-        int $hsCode,
+        float  $price,
+        int    $qty,
+        int    $hsCode,
         string $countryOfManufacture,
-        float $weightKgGross,
+        float  $weightKgGross,
         ?float $weightKgNet = null,
         string $qtyUnitOfMeasure = 'BOX',
         string $priceCurrency = 'GBP',
         string $exportReason = 'permanent'
-    ) {
+    )
+    {
         $this->item = [
             "description" => $description,
             "price" => $price,
@@ -31,7 +30,7 @@ class LineItem
             "commodityCodes" => [
                 [
                     "typeCode" => "outbound",
-                    "value" => (string) $hsCode
+                    "value" => (string)$hsCode
                 ]
             ],
             "exportReasonType" => $exportReason,

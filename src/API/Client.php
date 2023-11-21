@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Booni3\DhlExpressRest\API;
 
 use Booni3\DhlExpressRest\Exceptions\ConfigException;
@@ -12,6 +11,10 @@ class Client
 {
     /** @var GuzzleClient */
     private $client;
+    /**
+     * @var array
+     */
+    private $config;
 
     public function __construct(GuzzleClient $client, array $config)
     {
@@ -47,12 +50,13 @@ class Client
         });
     }
 
-
     private function parse(callable $callback)
     {
+        $success = false;
+
         try {
             $response = call_user_func($callback);
-            $success = json_decode((string) $response->getBody(), true);
+            $success = json_decode((string)$response->getBody(), true);
         } catch (ClientException $e) {
             $clientException = json_decode((string)$e->getResponse()->getBody(), true);
         }
@@ -61,7 +65,7 @@ class Client
             throw ResponseException::parseError($response->getBody());
         }
 
-        if($clientException ?? null){
+        if ($clientException ?? null) {
             throw ResponseException::clientException($clientException);
         }
 
@@ -70,15 +74,14 @@ class Client
 
     protected function auth(): array
     {
-        if(! $user = $this->config['user'] ?? false){
+        if (!$user = $this->config['user'] ?? false) {
             throw ConfigException::missingArgument('user');
         }
 
-        if(! $pass = $this->config['pass'] ?? false){
+        if (!$pass = $this->config['pass'] ?? false) {
             throw ConfigException::missingArgument('pass');
         }
 
         return [$user, $pass];
     }
-
 }

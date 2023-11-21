@@ -9,9 +9,11 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class DHL
 {
-    const URI_SANDBOX = 'https://express.api.dhl.com/mydhlapi/test/';
-    const URI_PRODUCTION = 'https://express.api.dhl.com/mydhlapi/???/';
-    const TIME_FORMAT = 'Y-m-d\TH:i:s';
+    public const DATE_FORMAT = 'Y-m-d';
+    public const TIME_FORMAT = 'Y-m-d\TH:i:s';
+
+    protected const URI_SANDBOX = 'https://express.api.dhl.com/mydhlapi/test/';
+    protected const URI_PRODUCTION = 'https://express.api.dhl.com/mydhlapi/???/';
 
     /** @var GuzzleClient */
     protected $client;
@@ -36,24 +38,24 @@ class DHL
         return new static($config, $client);
     }
 
-    public function shipments()
+    public function shipments(): Shipments
     {
         return new Shipments($this->client(), $this->config);
     }
 
-    public function rates()
+    public function rates(): Rates
     {
         return new Rates($this->client(), $this->config);
     }
 
-    public function tracking()
+    public function tracking(): Tracking
     {
         return new Tracking($this->client(), $this->config);
     }
 
     protected function client(): GuzzleClient
     {
-        if($this->client){
+        if ($this->client) {
             return $this->client;
         }
 
@@ -63,9 +65,9 @@ class DHL
         ]);
     }
 
-    private function baseUri()
+    private function baseUri(): string
     {
-        if($this->config['sandbox'] ?? false){
+        if ($this->config['sandbox'] ?? false) {
             return self::URI_SANDBOX;
         }
 

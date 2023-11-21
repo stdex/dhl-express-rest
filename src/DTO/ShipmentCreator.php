@@ -3,37 +3,109 @@
 namespace Booni3\DhlExpressRest\DTO;
 
 use Booni3\DhlExpressRest\DHL;
-use Booni3\DhlExpressRest\ShipmentException;
+use Booni3\DhlExpressRest\Exceptions\ShipmentException;
 use Carbon\Carbon;
 
 class ShipmentCreator
 {
-    public Carbon $readyAt;
-    public string $timezone = 'GMT';
-    public bool $pickupRequested = false;
-    public string $productCode = '';
-    public string $incoterm = 'DAP';
-    public ?string $description = null;
-    public bool $customsDeclarable = false;
+    /**
+     * @var Carbon
+     */
+    public $readyAt;
+    /**
+     * @var string
+     */
+    public $timezone = 'GMT';
+    /**
+     * @var bool
+     */
+    public $pickupRequested = false;
+    /**
+     * @var string
+     */
+    public $productCode = '';
+    /**
+     * @var string
+     */
+    public $incoterm = 'DAP';
+    /**
+     * @var string|null
+     */
+    public $description = null;
+    /**
+     * @var bool
+     */
+    public $customsDeclarable = false;
 
-    public Address $shipper;
-    public Address $receiver;
+    /**
+     * @var Address
+     */
+    public $shipper;
+    /**
+     * @var Address
+     */
+    public $receiver;
 
-    protected array $accounts = [];
-    protected array $packages = [];
-    protected array $references = [];
-    protected array $valueAddedServices = [];
-    protected array $exportLineItems = [];
-    protected int $lineItemNumber = 0;
-    protected array $invoice = [];
-    protected array $additionalCharges = [];
-    protected ?float $declaredValue = null;
-    protected string $declaredValueCurrency = 'GBP';
-    protected string $exportReason = 'sale';
-    protected string $exportReasonType = 'permanent';
-    protected string $placeOfIncoterm = '';
-    protected bool $paperless = false;
-    protected ?string $labelFormat = null;
+    /**
+     * @var array
+     */
+    protected $accounts = [];
+    /**
+     * @var array
+     */
+    protected $packages = [];
+    /**
+     * @var array
+     */
+    protected $references = [];
+    /**
+     * @var array
+     */
+    protected $valueAddedServices = [];
+    /**
+     * @var array
+     */
+    protected $exportLineItems = [];
+    /**
+     * @var int
+     */
+    protected $lineItemNumber = 0;
+    /**
+     * @var array
+     */
+    protected $invoice = [];
+    /**
+     * @var array
+     */
+    protected $additionalCharges = [];
+    /**
+     * @var float|null
+     */
+    protected $declaredValue = null;
+    /**
+     * @var string
+     */
+    protected $declaredValueCurrency = 'GBP';
+    /**
+     * @var string
+     */
+    protected $exportReason = 'sale';
+    /**
+     * @var string
+     */
+    protected $exportReasonType = 'permanent';
+    /**
+     * @var string
+     */
+    protected $placeOfIncoterm = '';
+    /**
+     * @var bool
+     */
+    protected $paperless = false;
+    /**
+     * @var string|null
+     */
+    protected $labelFormat = null;
 
     public function __construct()
     {
@@ -43,7 +115,7 @@ class ShipmentCreator
     public function setCutOffTime(string $time = '4pm', $weekdaysOnly = true)
     {
         if ($weekdaysOnly && today()->isWeekend()) {
-            $time = 'weekday '.$time;
+            $time = 'weekday ' . $time;
         }
 
         $this->readyAt = now()->next($time);
@@ -154,7 +226,7 @@ class ShipmentCreator
 
     protected function setIncoterm(string $incoterm)
     {
-        if (! in_array(strtoupper($incoterm), ['DDP', 'DAP'])) {
+        if (!in_array(strtoupper($incoterm), ['DDP', 'DAP'])) {
             throw ShipmentException::invalidIncoterm();
         }
 
@@ -176,7 +248,7 @@ class ShipmentCreator
      *
      * - Setting to DDP will ensure that any extra charges (storage etc.) are charged to the account but
      * the DDP surcharge (if applicable) will remain in place.
-     * 
+     *
      * - DAP should be acceptable in most cases for the customer to receive the shipment without any furhter
      * intervention or charges.
      *
@@ -187,7 +259,7 @@ class ShipmentCreator
      */
     public function setTermsIOSS(string $importerTaxId, string $countryCode, string $incoterm = 'DAP')
     {
-        if(! $this->shipper){
+        if (!$this->shipper) {
             throw ShipmentException::shipperNotSet();
         }
 
@@ -286,7 +358,7 @@ class ShipmentCreator
 
     protected function exportLineItems()
     {
-        if (! $this->exportLineItems) {
+        if (!$this->exportLineItems) {
             throw ShipmentException::missingInformation('export line items');
         }
 
@@ -309,14 +381,15 @@ class ShipmentCreator
 
     protected function invoice(): array
     {
-        if (! $this->invoice) {
+        if (!$this->invoice) {
             throw ShipmentException::missingInformation('invoice');
         }
 
         return $this->invoice;
     }
 
-    public function setFreightInvoiceCharge($freightCost) {
+    public function setFreightInvoiceCharge($freightCost)
+    {
         $this->additionalCharges['freight_invoice_charge'] = $freightCost;
     }
 
@@ -324,7 +397,7 @@ class ShipmentCreator
     {
         $array = [];
 
-        if(isset($this->additionalCharges['freight_invoice_charge'])){
+        if (isset($this->additionalCharges['freight_invoice_charge'])) {
             $array[] = [
                 'value' => $this->additionalCharges['freight_invoice_charge'],
                 'typeCode' => 'freight'
@@ -348,7 +421,7 @@ class ShipmentCreator
 
     protected function description()
     {
-        if (! $this->description && $this->customsDeclarable) {
+        if (!$this->description && $this->customsDeclarable) {
             throw ShipmentException::missingInformation('description');
         }
 
@@ -359,7 +432,7 @@ class ShipmentCreator
     {
         $format = strtolower($format);
 
-        if (! in_array($format, ['pdf', 'zpl', 'lp2', 'epl'])) {
+        if (!in_array($format, ['pdf', 'zpl', 'lp2', 'epl'])) {
             throw ShipmentException::invalidLabelEncodingFormat();
         }
 

@@ -1,8 +1,6 @@
 <?php
 
-
-namespace Booni3\DhlExpressRest;
-
+namespace Booni3\DhlExpressRest\Exceptions;
 
 class AddressException extends \Exception
 {

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Booni3\DhlExpressRest\API;
-
 
 use Booni3\DhlExpressRest\Response\ShipmentResponse;
 use Booni3\DhlExpressRest\DTO\ShipmentCreator;

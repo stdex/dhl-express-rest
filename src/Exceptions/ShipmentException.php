@@ -1,8 +1,6 @@
 <?php
 
-
-namespace Booni3\DhlExpressRest;
-
+namespace Booni3\DhlExpressRest\Exceptions;
 
 class ShipmentException extends \Exception
 {
@@ -18,7 +16,7 @@ class ShipmentException extends \Exception
 
     public static function missingInformation($key)
     {
-        throw new static('Required information missing: '.$key);
+        throw new static('Required information missing: ' . $key);
     }
 
     public static function shipperNotSet()

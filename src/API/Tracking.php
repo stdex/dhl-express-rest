@@ -1,12 +1,7 @@
 <?php
 
-
 namespace Booni3\DhlExpressRest\API;
 
-
-use Booni3\DhlExpressRest\DHL;
-use Booni3\DhlExpressRest\Response\RatesResponse;
-use Booni3\DhlExpressRest\DTO\ShipmentCreator;
 use Carbon\Carbon;
 
 class Tracking extends Client
@@ -30,7 +25,9 @@ class Tracking extends Client
             'dateRangeTo' => $to ? $to->format('Y-m-d') : null,
             'trackingView' => 'all-checkpoints',
             'levelOfDetail' => 'all'
-        ], fn($row) => $row);
+        ], function ($row) {
+            return $row;
+        });
 
         return $this->get("tracking", $tracking + $data);
     }

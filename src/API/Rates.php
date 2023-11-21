@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Booni3\DhlExpressRest\API;
-
 
 use Booni3\DhlExpressRest\DHL;
 use Booni3\DhlExpressRest\Response\RatesResponse;
@@ -10,6 +8,34 @@ use Booni3\DhlExpressRest\DTO\ShipmentCreator;
 
 class Rates extends Client
 {
+    public function retrieveSingle(ShipmentCreator $creator): RatesResponse
+    {
+        $account = current($creator->accounts());
+        $accountNumber = $account ? $account['number'] : '';
+
+        $packages = $creator->packageWeightAndDimensionsOnly();
+        $package = current($packages);
+
+        return RatesResponse::fromArray(
+            $this->get('rates', [
+                'account' => $accountNumber,
+                'originCountryCode' => $creator->shipper->getCountryCode(),
+                'originCityName' => $creator->shipper->getCityName(),
+                'destinationCountryCode' => $creator->receiver->getCountryCode(),
+                'destinationCityName' => $creator->receiver->getCityName(),
+                'weight' => $package['weight'],
+                'length' => $package['dimensions']['length'],
+                'width' => $package['dimensions']['width'],
+                'height' => $package['dimensions']['height'],
+                'plannedShippingDate' => $creator->readyAt->format(DHL::DATE_FORMAT),
+                'isCustomsDeclarable' => $creator->customsDeclarable,
+                'unitOfMeasurement' => 'metric',
+                'nextBusinessDay' => 'true',
+                'requestEstimatedDeliveryDate' => 'true',
+            ])
+        );
+    }
+
     public function retrieve(ShipmentCreator $creator): RatesResponse
     {
         return RatesResponse::fromArray(

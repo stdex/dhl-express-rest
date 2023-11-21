@@ -121,6 +121,11 @@ class ShipmentCreator
         $this->readyAt = now()->next($time);
     }
 
+    public function setReadyAt(string $dt)
+    {
+        $this->readyAt = Carbon::createFromFormat('Y-m-d', $dt);
+    }
+
     public function plannedShippingDateAndTime(): string
     {
         return sprintf('%s %s%s',
@@ -184,6 +189,14 @@ class ShipmentCreator
         return array_map(function ($row) {
             return ['value' => $row, 'typeCode' => 'CU'];
         }, $this->references);
+    }
+
+    public function setRateAccountNumber(string $accountNumber)
+    {
+        $this->accounts['rate'] = [
+            'number' => $accountNumber,
+            'typeCode' => 'rate',
+        ];
     }
 
     public function setShipperAccountNumber(string $accountNumber)

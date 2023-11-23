@@ -107,20 +107,6 @@ class ShipmentCreator
      */
     protected $labelFormat = null;
 
-    public function __construct()
-    {
-        $this->setCutOffTime();
-    }
-
-    public function setCutOffTime(string $time = '4pm', $weekdaysOnly = true)
-    {
-        if ($weekdaysOnly && today()->isWeekend()) {
-            $time = 'weekday ' . $time;
-        }
-
-        $this->readyAt = now()->next($time);
-    }
-
     public function setReadyAt(string $dt)
     {
         $this->readyAt = Carbon::createFromFormat('Y-m-d', $dt);

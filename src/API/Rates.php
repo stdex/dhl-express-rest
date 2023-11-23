@@ -18,7 +18,7 @@ class Rates extends Client
 
         return RatesResponse::fromArray(
             $this->get('rates', [
-                'account' => $accountNumber,
+                'accountNumber' => $accountNumber,
                 'originCountryCode' => $creator->shipper->getCountryCode(),
                 'originCityName' => $creator->shipper->getCityName(),
                 'destinationCountryCode' => $creator->receiver->getCountryCode(),
@@ -28,10 +28,10 @@ class Rates extends Client
                 'width' => $package['dimensions']['width'],
                 'height' => $package['dimensions']['height'],
                 'plannedShippingDate' => $creator->readyAt->format(DHL::DATE_FORMAT),
-                'isCustomsDeclarable' => $creator->customsDeclarable,
+                'isCustomsDeclarable' => var_export($creator->customsDeclarable, true),
                 'unitOfMeasurement' => 'metric',
-                'nextBusinessDay' => 'true',
-                'requestEstimatedDeliveryDate' => 'true',
+                'nextBusinessDay' => var_export(true, true),
+                'requestEstimatedDeliveryDate' => var_export(true, true),
             ])
         );
     }

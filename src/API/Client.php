@@ -25,28 +25,32 @@ class Client
     public function get($endpoint = null, array $body = []): array
     {
         return $this->parse(function () use ($endpoint, $body) {
-            return $this->client->request('GET', $endpoint, [
+            $options = [
                 'query' => $body,
-                'auth' => $this->auth(),
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                 ]
-            ]);
+            ];
+            $this->setAuth($options);
+
+            return $this->client->request('GET', $endpoint, $options);
         });
     }
 
     public function post($endpoint = null, array $body = []): array
     {
         return $this->parse(function () use ($endpoint, $body) {
-            return $this->client->request('POST', $endpoint, [
+            $options = [
                 'json' => $body,
-                'auth' => $this->auth(),
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                 ]
-            ]);
+            ];
+            $this->setAuth($options);
+
+            return $this->client->request('POST', $endpoint, $options);
         });
     }
 
@@ -58,7 +62,10 @@ class Client
             $response = call_user_func($callback);
             $success = json_decode((string)$response->getBody(), true);
         } catch (ClientException $e) {
-            $clientException = json_decode((string)$e->getResponse()->getBody(), true);
+            $response = $e->getResponse();
+            if ($response) {
+                $clientException = json_decode((string)$response->getBody()->getContents(), true);
+            }
         }
 
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -83,5 +90,28 @@ class Client
         }
 
         return [$user, $pass];
+    }
+
+    protected function authApiKey(): string
+    {
+        if (!$apiKey = $this->config['apiKey'] ?? false) {
+            throw ConfigException::missingArgument('apiKey');
+        }
+
+        return $apiKey;
+    }
+
+    protected function setAuth(array &$options): void
+    {
+
+        try {
+            $options['auth'] = $this->auth();
+        } catch (\Exception $e) {
+        }
+
+        try {
+            $options['headers']['X-API-KEY'] = $this->authApiKey();
+        } catch (\Exception $e) {
+        }
     }
 }
